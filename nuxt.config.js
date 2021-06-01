@@ -17,7 +17,7 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: [{ src: '~/plugins/inject-ww', ssr: false }],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -67,22 +67,31 @@ export default {
     extend(config, ctx) {
       config.module.rules.push({
         test: /\.wasm$/,
-        loader: "base64-loader",
-        type: "javascript/auto",
-      });
+        loader: 'base64-loader',
+        type: 'javascript/auto',
+      })
 
-      config.module.noParse = /\.wasm$/;
+      config.module.noParse = /\.wasm$/
+      config.output.globalObject = 'this'
 
-      config.module.rules.forEach(rule => {
-        (rule.oneOf || []).forEach(oneOf => {
-          if (oneOf.loader && oneOf.loader.indexOf("file-loader") >= 0) {
-            oneOf.exclude.push(/\.wasm$/);
+      config.module.rules.forEach((rule) => {
+        ;(rule.oneOf || []).forEach((oneOf) => {
+          if (oneOf.loader && oneOf.loader.indexOf('file-loader') >= 0) {
+            oneOf.exclude.push(/\.wasm$/)
           }
-        });
-      });
-      config.node = {
-        fs: 'empty'
+        })
+      })
+      if (ctx.isClient) {
+        // web workers are only available client-side
+        config.module.rules.push({
+          test: /\.worker\.js$/, // this will pick up all .js files that ends with ".worker.js"
+          loader: 'worker-loader',
+          exclude: /(node_modules)/,
+        })
       }
-    }
+      config.node = {
+        fs: 'empty',
+      }
+    },
   },
 }

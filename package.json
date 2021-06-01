@@ -15,7 +15,8 @@
     "argon2-browser": "^1.16.0",
     "base64-loader": "^1.0.0",
     "core-js": "^3.9.1",
-    "nuxt": "^2.15.3"
+    "nuxt": "^2.15.3",
+    "worker-loader": "^3.0.8"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^6.0.0",
